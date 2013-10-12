@@ -17,10 +17,9 @@ public class VoiceActivity extends Activity {
 
 	protected static final int RESULT_SPEECH = 1;
 	
-	private ImageButton btnSpeak;
 	private TextView txtText;
 	
-	String contents = "";
+	String profile = "";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,29 +27,23 @@ public class VoiceActivity extends Activity {
 		setContentView(R.layout.activity_voice);
 		
 		txtText = (TextView) findViewById(R.id.txtText);
-		btnSpeak = (ImageButton) findViewById(R.id.btnSpeak);
-		btnSpeak.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-			
-				Intent intent = new Intent(
-						RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-				intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
-				
-				try {
-					startActivityForResult(intent, RESULT_SPEECH);
-					txtText.setText("");
-				} catch (ActivityNotFoundException a) {
-					Toast t = Toast.makeText(getApplicationContext(),
-                            "Opps! Your device doesn't support Speech to Text",
-                            Toast.LENGTH_SHORT);
-                    t.show();
-				}
-			}
-		});
+
+		Intent intent = new Intent(
+				RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+		
+		try {
+			startActivityForResult(intent, RESULT_SPEECH);
+			txtText.setText("");
+		} catch (ActivityNotFoundException a) {
+			Toast t = Toast.makeText(getApplicationContext(),
+                    "Opps! Your device doesn't support Speech to Text",
+                    Toast.LENGTH_SHORT);
+            t.show();
+		}
 		
 		Intent fromQR = getIntent();
-		contents = fromQR.getStringExtra("contents");
+		profile = fromQR.getStringExtra("profile");
 		
 	}
 
@@ -79,7 +72,7 @@ public class VoiceActivity extends Activity {
 		}
 		
 		Intent toPayPal = new Intent(VoiceActivity.this, PayPalActivity.class);
-		toPayPal.putExtra("contents", contents);
+		toPayPal.putExtra("profile", profile);
 		toPayPal.putExtra("amount", amount);
 	    startActivity(toPayPal);
 	}
