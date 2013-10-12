@@ -14,25 +14,20 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.ampvita.scanpal.MainActivity"
+            android:name="com.ampvita.scanpal.QRActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="com.ampvita.scanpal.PayPalActivity"
-            android:label="@string/title_activity_pay_pal" >
         </activity>
         <activity
             android:name="com.ampvita.scanpal.VoiceActivity"
             android:label="@string/title_activity_voice" >
         </activity>
         <activity
-            android:name="com.ampvita.scanpal.QRActivity"
-            android:label="@string/title_activity_qr" >
+            android:name="com.ampvita.scanpal.PayPalActivity"
+            android:label="@string/title_activity_pay_pal" >
         </activity>
     </application>
 

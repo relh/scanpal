@@ -9,6 +9,8 @@ import android.widget.Button;
 
 public class QRActivity extends Activity {
 
+	String contents = "";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,8 +34,12 @@ public class QRActivity extends Activity {
 	    if (resultCode == RESULT_OK) {
 	    	
 	    }
-	           String contents = intent.getStringExtra("SCAN_RESULT"); // This will contain your scan result
+	           contents = intent.getStringExtra("SCAN_RESULT"); // This will contain your scan result
 	           String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+	           
+	           Intent toVoice = new Intent(QRActivity.this, VoiceActivity.class);
+		       toVoice.putExtra("contents", contents);
+		       startActivity(toVoice);
 	    }
 	 }
 	
