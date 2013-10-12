@@ -22,6 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.ampvita.scanpal.PayPalActivity"
+            android:label="@string/title_activity_pay_pal" >
+        </activity>
+        <activity
+            android:name="com.ampvita.scanpal.VoiceActivity"
+            android:label="@string/title_activity_voice" >
+        </activity>
+        <activity
+            android:name="com.ampvita.scanpal.QRActivity"
+            android:label="@string/title_activity_qr" >
+        </activity>
     </application>
 
 </manifest>
