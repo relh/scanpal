@@ -22,13 +22,13 @@ public class MainActivity extends Activity {
 
 		((Button)findViewById(R.id.button2)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				startActivity(new Intent(MainActivity.this, QRActivity.class)); 
+				startActivity(new Intent(MainActivity.this, VoiceActivity.class)); 
 			} 
 		});
 
 		((Button)findViewById(R.id.button3)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				startActivity(new Intent(MainActivity.this, VoiceActivity.class)); 
+				startActivity(new Intent(MainActivity.this, QRActivity.class)); 
 			} 
 		});
 	}
