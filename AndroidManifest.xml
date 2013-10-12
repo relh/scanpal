@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="12"
+        android:minSdkVersion="8"
         android:targetSdkVersion="18" />
 
     <application
@@ -14,10 +14,11 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.ampvita.scanpal.QRActivity"
+            android:name="com.ampvita.scanpal.LoginActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -28,6 +29,10 @@
         <activity
             android:name="com.ampvita.scanpal.PayPalActivity"
             android:label="@string/title_activity_pay_pal" >
+        </activity>
+        <activity
+            android:name="com.ampvita.scanpal.LoginActivity"
+            android:label="@string/title_activity_login" >
         </activity>
     </application>
 

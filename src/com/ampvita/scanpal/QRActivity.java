@@ -3,6 +3,7 @@ package com.ampvita.scanpal;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -16,10 +17,10 @@ public class QRActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_qr);
 		
-		Intent intent = new Intent(
+		Intent launchQR = new Intent(
                 "com.google.zxing.client.android.SCAN");
-        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-        startActivityForResult(intent, 0);
+        launchQR.putExtra("SCAN_MODE", "PRODUCT_MODE");
+        startActivityForResult(launchQR, 0);
 	}
 
 	// ZXing Result Handler
