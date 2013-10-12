@@ -7,5 +7,6 @@
     <string name="title_activity_pay_pal">PayPalActivity</string>
     <string name="title_activity_voice">VoiceActivity</string>
     <string name="title_activity_qr">QRActivity</string>
+	<string name="speak">Speak!</string>
 
 </resources>
