@@ -20,13 +20,13 @@ public class MainActivity extends Activity {
 			} 
 		});
 
-		((Button)findViewById(R.id.button2)).setOnClickListener(new View.OnClickListener() {
+		((Button)findViewById(R.id.button2)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				startActivity(new Intent(MainActivity.this, QRActivity.class)); 
 			} 
 		});
 
-		((Button)findViewById(R.id.button3)).setOnClickListener(new View.OnClickListener() {
+		((Button)findViewById(R.id.button3)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				startActivity(new Intent(MainActivity.this, VoiceActivity.class)); 
 			} 
