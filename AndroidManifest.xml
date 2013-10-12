@@ -31,7 +31,7 @@
             android:label="@string/title_activity_pay_pal" >
         </activity>
         <activity
-            android:name="com.ampvita.scanpal.LoginActivity"
+            android:name="com.ampvita.scanpal.QRActivity"
             android:label="@string/title_activity_login" >
         </activity>
     </application>
