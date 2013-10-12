@@ -20,6 +20,8 @@ public class VoiceActivity extends Activity {
 	private ImageButton btnSpeak;
 	private TextView txtText;
 	
+	String contents = "";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,6 +48,10 @@ public class VoiceActivity extends Activity {
 				}
 			}
 		});
+		
+		Intent fromQR = getIntent();
+		contents = fromQR.getStringExtra("contents");
+		
 	}
 
 	@Override
@@ -58,17 +64,24 @@ public class VoiceActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		
+		String amount = "";
+		
 		switch (requestCode) {
 		case RESULT_SPEECH: {
 			if (resultCode == RESULT_OK && null != data) {
 				ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 				txtText.setText(text.get(0));
+				amount = text.get(0);
 				
 				//Pattern money = Pattern.compile('\$\d+');
-				
 			}
 		}
 		}
+		
+		Intent toPayPal = new Intent(VoiceActivity.this, PayPalActivity.class);
+		toPayPal.putExtra("contents", contents);
+		toPayPal.putExtra("amount", amount);
+	    startActivity(toPayPal);
 	}
 	
 }
