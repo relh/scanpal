@@ -16,14 +16,10 @@ public class QRActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_qr);
 		
-		Button qr = (Button)findViewById(R.id.buttonqr);
-		qr.setOnClickListener(new View.OnClickListener() {
-		@Override
-		public void onClick(View arg0) {
-			Intent intent = new Intent(
-	                "com.google.zxing.client.android.SCAN");
-	        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-	        startActivityForResult(intent, 0); } });
+		Intent intent = new Intent(
+                "com.google.zxing.client.android.SCAN");
+        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+        startActivityForResult(intent, 0);
 	}
 
 	// ZXing Result Handler
