@@ -14,10 +14,22 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Button b = null;
-		//b init
-
+		Button a = (Button)findViewById(R.id.button1);
+		a.setOnClickListener(new View.OnClickListener() {
+		@Override
+		public void onClick(View arg0) {
+			Intent myIntent = new Intent(MainActivity.this, VoiceActivity.class);
+			MainActivity.this.startActivity(myIntent); } });
+		
+		Button b = (Button)findViewById(R.id.button2);
 		b.setOnClickListener(new View.OnClickListener() {
+		@Override
+		public void onClick(View arg0) {
+			Intent myIntent = new Intent(MainActivity.this, VoiceActivity.class);
+			MainActivity.this.startActivity(myIntent); } });
+		
+		Button c = (Button)findViewById(R.id.button3);
+		c.setOnClickListener(new View.OnClickListener() {
 		@Override
 		public void onClick(View arg0) {
 			Intent myIntent = new Intent(MainActivity.this, VoiceActivity.class);
