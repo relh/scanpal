@@ -2,6 +2,7 @@ package com.ampvita.scanpal;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
 
 public class PayPalActivity extends Activity {
 
@@ -10,4 +11,5 @@ public class PayPalActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pay_pal);
 	}
+	
 }
