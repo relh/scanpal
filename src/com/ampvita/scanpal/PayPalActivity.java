@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -15,6 +16,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
@@ -51,8 +53,8 @@ public class PayPalActivity extends Activity {
 		String token = "";
 		tvPayPal = (TextView) findViewById(R.id.tvPayPal);
 		tvPayPal.setText("Contents:\n\n" + contents + "\n\n Amount: " + amount);
-
-		AsyncTask<String, Void, String> amazonTask = new AsyncTask<String, Void, String>() {
+		
+		AsyncTask<String, Void, String> authTask = new AsyncTask<String, Void, String>() {
 
 			protected String doInBackground(String... params) {
 				try {
@@ -65,93 +67,55 @@ public class PayPalActivity extends Activity {
 			}
 		};
 		try {
-			token = amazonTask.execute("").get();
+			token = authTask.execute("").get();
 		} catch (Exception e) {
 			tvPayPal.setText(e.toString());
 		}
-
 		tvPayPal.setText(token);
 
-		//FOR SCRAPING REVERSE IMAGE SEARCH FOR AMAZON NAME
-		amazonTask = new AsyncTask<String, Void, String>() {
-
+		AsyncTask<String, Void, String> task = new AsyncTask<String, Void, String>() {
 			protected String doInBackground(String... params) {
 				try {
-					HttpPost post = new HttpPost("http://scanpal-server.herokuapp.com/scrape.php");
+					
+//					FOR SCRAPING REVERSE IMAGE SEARCH FOR AMAZON NAME
+					HttpPost amazonGet = new HttpPost("http://scanpal-server.herokuapp.com/scrape.php");
 					List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 					postParams.add(new BasicNameValuePair("img", URLEncoder.encode("https://raw.github.com/agentwaj/scanpal-server/3d5c9bf61de6d91dd8c2b4a088560baf2a039a3f/img.jpg", "UTF-8")));
-					post.setEntity(new UrlEncodedFormEntity(postParams));
-					return convertStreamToString(new DefaultHttpClient().execute(post).getEntity().getContent());//.toString();
+					amazonGet.setEntity(new UrlEncodedFormEntity(postParams));
+					String amazon = convertStreamToString(new DefaultHttpClient().execute(amazonGet).getEntity().getContent());//.toString();
+					amazon = amazon.replace("-", " ");
+					Log.e("amazon", URLEncoder.encode(amazon, "UTF-8"));
+					
+					//FOR FINDING EBAY ITEM
+					HttpPost ebayGet = new HttpPost("http://scanpal-server.herokuapp.com");
+					List<NameValuePair> postParams2 = new ArrayList<NameValuePair>();
+					String encoded = URLEncoder.encode("LOEFFLER-RANDALL-Rider-Satchel-Camel", "UTF-8");
+//					Log.e("")
+					postParams2.add(new BasicNameValuePair("keywords", encoded));
+					
+					ebayGet.setEntity(new UrlEncodedFormEntity(postParams2));
+					Log.e("here", "here");
+					String mygod = convertStreamToString(new DefaultHttpClient().execute(ebayGet).getEntity().getContent());//.toString();
+					Log.e("here", mygod +"omg");
+					return mygod;
 				} catch (Exception e) {
+					e.printStackTrace();
 					tvPayPal.setText(e.toString());
 				}
 				return "fail";
 			}
-
-			/* (non-Javadoc)
-			 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-			 */
-			@Override
-			protected void onPostExecute(String result) {
-				// TODO Auto-generated method stub
-				super.onPostExecute(result);
-				//FOR SEARCHING EBAY FOR THE AMAZON ITEM
-				AsyncTask<String, Void, String> ebayTask = new AsyncTask<String, Void, String>() {
-
-					protected String doInBackground(String... params) {
-						try {
-							HttpPost post = new HttpPost("http://scanpal-server.herokuapp.com");
-							List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-							postParams.add(new BasicNameValuePair("keywords", URLEncoder.encode(params[0], "UTF-8")));
-							post.setEntity(new UrlEncodedFormEntity(postParams));
-							return convertStreamToString(new DefaultHttpClient().execute(post).getEntity().getContent());//.toString();
-						} catch (Exception e) {
-							tvPayPal.setText(e.toString());
-						}
-						return "fail";
-					}
-				};
-				
-				String ebayId = "";
-				try {
-					ebayId = ebayTask.execute(result).get();
-				} catch (Exception e) {
-					tvPayPal.setText(e.toString());
-				}
-
-				tvPayPal.setText(ebayId);
-			}
 		};
 		try {
-			token = amazonTask.execute("").get();
+			Log.e("here", "here2");
+			token = task.execute("").get();
+			Log.e("here", "here3");
 		} catch (Exception e) {
+			Log.e("here", "here4");
 			tvPayPal.setText(e.toString());
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		tvPayPal.setText(token + "END");
+		
+		
 		//	EBAY POST EXAMPLE
 		//		String keywords = "surface%20pro";
 		//		String eBayURL = "http://svcs.ebay.com/services/search/FindingService/v1?SECURITY-APPNAME=scanpalg-41d3-4ac7-8ea3-dd855899e8a1&OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=1.0.0&RESPONSE-DATA-FORMAT=JSON&callback=_cb_findItemsByKeywords&REST-PAYLOAD&paginationInput.entriesPerPage=1&keywords=" + keywords;
