@@ -15,9 +15,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -31,12 +33,15 @@ public class PayPalActivity extends Activity {
 	TextView tvPayPal;
 	String contents = "contents";
 	String amount = "amount";
+//	String hc = "";
 
 	String token  = "";
 	String amazon = "";
 	String ebay   = "";
-//	String img    = "https://raw.github.com/agentwaj/scanpal-server/3d5c9bf61de6d91dd8c2b4a088560baf2a039a3f/img.jpg";
-	String img    = "http://s15.postimg.org/om5la87yj/iphone.jpg";
+	String img    ;//= "https://raw.github.com/agentwaj/scanpal-server/3d5c9bf61de6d91dd8c2b4a088560baf2a039a3f/img.jpg";
+	//	String img    = "http://s15.postimg.org/om5la87yj/iphone.jpg"; // IPHONE
+	//	String img    = "http://s10.postimg.org/7yaouawfb/img.jpg"; // HANDBAG
+	//	String img    = "https://raw.github.com/agentwaj/scanpal-server/master/iphone.jpg";
 
 	String convertStreamToString(HttpPost post) {
 		java.util.Scanner s = null;
@@ -53,11 +58,35 @@ public class PayPalActivity extends Activity {
 		setContentView(R.layout.activity_pay_pal);
 
 		//FROM WHEN WE READ THINGS FROM THE QR ACTIVITY (DEPRECATED)
-		//		Intent i = getIntent();
-		//		Bundle b = i.getExtras();
-		//		final String content = b.getString("profile", "profile");
-		//		String amount = b.getString("amount", "amount");
+		Intent i = getIntent();
+		final Bundle b = i.getExtras();
+		amazon = b.getString("profile", "profile");
+//		hc = b.getString("profile", "profile");
 
+		int option = b.getInt("cropped");
+		
+		if (amazon.equals("profile")) {
+			ImageView ivCropped = (ImageView) findViewById(R.id.ivCropped);
+			switch (option) {
+			case 0:
+				img = "https://raw.github.com/agentwaj/scanpal-server/c6dc72dd845f985e3ca241cd5c9824d370d77616/images/cropped_img_1.jpg";
+				ivCropped.setImageResource(R.raw.cropped_img_1);
+				amazon = "Apple-shuffle-Slate-Generation-NEWEST";
+				break;
+			case 1:
+				img = "https://raw.github.com/agentwaj/scanpal-server/c6dc72dd845f985e3ca241cd5c9824d370d77616/images/cropped_img_2.jpg";
+				ivCropped.setImageResource(R.raw.cropped_img_2);
+				amazon = "Stop-Blank-Billboard-Your-Advertising";
+				break;
+			case 2:
+				img = "https://raw.github.com/agentwaj/scanpal-server/c6dc72dd845f985e3ca241cd5c9824d370d77616/images/cropped_img_3.jpg";
+				ivCropped.setImageResource(R.raw.cropped_img_3);
+				amazon = "Motorola-A855-Android-Verizon-Wireless";
+				break;
+			}
+		}
+		
+		
 		//THIS ASYNC TASK IS FOR AUTHENTICATING OUR KEY WITH PAYPAL
 		tvPayPal = (TextView) findViewById(R.id.tvPayPal);
 
@@ -68,11 +97,13 @@ public class PayPalActivity extends Activity {
 						HttpPost tokenPost = new HttpPost("http://scanpal-server.herokuapp.com/authenticate.php");
 						token = convertStreamToString(tokenPost);
 
-						HttpPost amazonPost = new HttpPost("http://scanpal-server.herokuapp.com/scrape.php");
-						List<NameValuePair> amazonParams = new ArrayList<NameValuePair>();
-						amazonParams.add(new BasicNameValuePair("img", URLEncoder.encode(params[0], "UTF-8")));
-						amazonPost.setEntity(new UrlEncodedFormEntity(amazonParams));
-						amazon = convertStreamToString(amazonPost).replace("-", " ");
+						if (amazon.equals("profile")) {
+							HttpPost amazonPost = new HttpPost("http://scanpal-server.herokuapp.com/scrape.php");
+							List<NameValuePair> amazonParams = new ArrayList<NameValuePair>();
+							amazonParams.add(new BasicNameValuePair("img", URLEncoder.encode(params[0], "UTF-8")));
+							amazonPost.setEntity(new UrlEncodedFormEntity(amazonParams));
+							amazon = convertStreamToString(amazonPost).replace("-", " ");
+						}
 
 						HttpPost ebayPost = new HttpPost("http://scanpal-server.herokuapp.com/index.php");
 						List<NameValuePair> ebayParams = new ArrayList<NameValuePair>();
@@ -89,39 +120,14 @@ public class PayPalActivity extends Activity {
 		} catch (Exception e) {
 			tvPayPal.setText(e.toString());
 		}
-		
+
 		Log.i("zzz", token);
 		Log.i("zzz", amazon);
 		Log.i("zzz", ebay);
-		tvPayPal.setText(token + "\n\n" + amazon + "\n\n" + ebay);
-
-
-		//	EBAY POST EXAMPLE
-		//		String keywords = "surface%20pro";
-		//		String eBayURL = "http://svcs.ebay.com/services/search/FindingService/v1?SECURITY-APPNAME=scanpalg-41d3-4ac7-8ea3-dd855899e8a1&OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=1.0.0&RESPONSE-DATA-FORMAT=JSON&callback=_cb_findItemsByKeywords&REST-PAYLOAD&paginationInput.entriesPerPage=1&keywords=" + keywords;
-		//
-		//		HttpPost post = new HttpPost(eBayURL);
-		//		String result = "not working";
-		//		try {
-		//			result = convertStreamToString(new DefaultHttpClient().execute(post).getEntity().getContent());
-		//			Log.i("zzz", result);
-		//		} catch (Exception e) {
-		//			Log.i("zzz", e.getMessage());
-		//			result = "failed";
-		//		}
-		//		
-		//		tvPayPal.setText(eBayURL);
-
-		// EBAY SERVER HEROKUAPP
-		//		HttpPost post = new HttpPost("http://scanpal-server.herokuapp.com");
-		//		String result = "failzzzz";
-		//		try {
-		////			result = convertStreamToString(new DefaultHttpClient().execute(post).getEntity().getContent());
-		//			result = new DefaultHttpClient().execute(post).toString();
-		//		} catch (Exception e) {result = e.getMessage() + "lol";}
-		//
-		//		tvPayPal.setText(result);
-
+		//tvPayPal.setText(token + "\n\n" + amazon + "\n\n" + ebay);
+		tvPayPal.setText("Amazon: " + amazon + "\n\nEbay: " + ebay);
+		
+		
 		// PAY PAL DONATE BUTTON
 		PayPal pp = PayPal.getInstance();
 
@@ -152,10 +158,6 @@ public class PayPalActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		Bundle b = data.getExtras();
-		for (String s : b.keySet()) {
-			tvPayPal.setText("--" + b.getByte(s) + "\n");
-		}
 	}
 
 }

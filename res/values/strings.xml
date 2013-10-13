@@ -9,5 +9,7 @@
     <string name="title_activity_qr">QRActivity</string>
     <string name="speak">Speak!</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_image">ImageActivity</string>
 
 </resources>
