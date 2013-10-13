@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -30,10 +29,22 @@ import com.paypal.android.MEP.PayPalPayment;
 public class PayPalActivity extends Activity {
 
 	TextView tvPayPal;
+	String contents = "contents";
+	String amount = "amount";
 
-	String convertStreamToString(java.io.InputStream is) {
-		java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-		return s.hasNext() ? s.next() : "";
+	String token  = "";
+	String amazon = "";
+	String ebay   = "";
+//	String img    = "https://raw.github.com/agentwaj/scanpal-server/3d5c9bf61de6d91dd8c2b4a088560baf2a039a3f/img.jpg";
+	String img    = "http://s15.postimg.org/om5la87yj/iphone.jpg";
+
+	String convertStreamToString(HttpPost post) {
+		java.util.Scanner s = null;
+		try {
+			s = new java.util.Scanner(new DefaultHttpClient().execute(post).getEntity().getContent()).useDelimiter("\\A");
+			return s.hasNext() ? s.next() : "";
+		} catch (Exception e) {}
+		return "fail";
 	}
 
 	@Override
@@ -42,80 +53,49 @@ public class PayPalActivity extends Activity {
 		setContentView(R.layout.activity_pay_pal);
 
 		//FROM WHEN WE READ THINGS FROM THE QR ACTIVITY (DEPRECATED)
-//		Intent i = getIntent();
-//		Bundle b = i.getExtras();
-//		final String content = b.getString("profile", "profile");
-//		String amount = b.getString("amount", "amount");
-		
+		//		Intent i = getIntent();
+		//		Bundle b = i.getExtras();
+		//		final String content = b.getString("profile", "profile");
+		//		String amount = b.getString("amount", "amount");
+
 		//THIS ASYNC TASK IS FOR AUTHENTICATING OUR KEY WITH PAYPAL
-		String contents = "contents";
-		String amount = "amount";
-		String token = "";
 		tvPayPal = (TextView) findViewById(R.id.tvPayPal);
-		tvPayPal.setText("Contents:\n\n" + contents + "\n\n Amount: " + amount);
-		
-		AsyncTask<String, Void, String> authTask = new AsyncTask<String, Void, String>() {
 
-			protected String doInBackground(String... params) {
-				try {
-					HttpPost post = new HttpPost("http://scanpal-server.herokuapp.com/authenticate.php");
-					return convertStreamToString(new DefaultHttpClient().execute(post).getEntity().getContent());//.toString();
-				} catch (Exception e) {
-					tvPayPal.setText(e.toString());
-				}
-				return "fail";
-			}
-		};
 		try {
-			token = authTask.execute("").get();
+			new AsyncTask<String, Void, String>() {
+				protected String doInBackground(String... params) {
+					try {
+						HttpPost tokenPost = new HttpPost("http://scanpal-server.herokuapp.com/authenticate.php");
+						token = convertStreamToString(tokenPost);
+
+						HttpPost amazonPost = new HttpPost("http://scanpal-server.herokuapp.com/scrape.php");
+						List<NameValuePair> amazonParams = new ArrayList<NameValuePair>();
+						amazonParams.add(new BasicNameValuePair("img", URLEncoder.encode(params[0], "UTF-8")));
+						amazonPost.setEntity(new UrlEncodedFormEntity(amazonParams));
+						amazon = convertStreamToString(amazonPost).replace("-", " ");
+
+						HttpPost ebayPost = new HttpPost("http://scanpal-server.herokuapp.com/index.php");
+						List<NameValuePair> ebayParams = new ArrayList<NameValuePair>();
+						String encoded = URLEncoder.encode(amazon, "UTF-8");
+						ebayParams.add(new BasicNameValuePair("keywords", encoded));
+						ebayPost.setEntity(new UrlEncodedFormEntity(ebayParams));
+						ebay = convertStreamToString(ebayPost);
+					} catch (Exception e) {
+						tvPayPal.setText(e.toString());
+					}
+					return "";
+				}
+			}.execute(img).get();
 		} catch (Exception e) {
 			tvPayPal.setText(e.toString());
 		}
-		tvPayPal.setText(token);
+		
+		Log.i("zzz", token);
+		Log.i("zzz", amazon);
+		Log.i("zzz", ebay);
+		tvPayPal.setText(token + "\n\n" + amazon + "\n\n" + ebay);
 
-		AsyncTask<String, Void, String> task = new AsyncTask<String, Void, String>() {
-			protected String doInBackground(String... params) {
-				try {
-					
-//					FOR SCRAPING REVERSE IMAGE SEARCH FOR AMAZON NAME
-					HttpPost amazonGet = new HttpPost("http://scanpal-server.herokuapp.com/scrape.php");
-					List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-					postParams.add(new BasicNameValuePair("img", URLEncoder.encode("https://raw.github.com/agentwaj/scanpal-server/3d5c9bf61de6d91dd8c2b4a088560baf2a039a3f/img.jpg", "UTF-8")));
-					amazonGet.setEntity(new UrlEncodedFormEntity(postParams));
-					String amazon = convertStreamToString(new DefaultHttpClient().execute(amazonGet).getEntity().getContent());//.toString();
-					amazon = amazon.replace("-", " ");
-					Log.e("amazon", URLEncoder.encode(amazon, "UTF-8"));
-					
-					//FOR FINDING EBAY ITEM
-					HttpPost ebayGet = new HttpPost("http://scanpal-server.herokuapp.com");
-					List<NameValuePair> postParams2 = new ArrayList<NameValuePair>();
-					String encoded = URLEncoder.encode("LOEFFLER-RANDALL-Rider-Satchel-Camel", "UTF-8");
-//					Log.e("")
-					postParams2.add(new BasicNameValuePair("keywords", encoded));
-					
-					ebayGet.setEntity(new UrlEncodedFormEntity(postParams2));
-					Log.e("here", "here");
-					String mygod = convertStreamToString(new DefaultHttpClient().execute(ebayGet).getEntity().getContent());//.toString();
-					Log.e("here", mygod +"omg");
-					return mygod;
-				} catch (Exception e) {
-					e.printStackTrace();
-					tvPayPal.setText(e.toString());
-				}
-				return "fail";
-			}
-		};
-		try {
-			Log.e("here", "here2");
-			token = task.execute("").get();
-			Log.e("here", "here3");
-		} catch (Exception e) {
-			Log.e("here", "here4");
-			tvPayPal.setText(e.toString());
-		}
-		tvPayPal.setText(token + "END");
-		
-		
+
 		//	EBAY POST EXAMPLE
 		//		String keywords = "surface%20pro";
 		//		String eBayURL = "http://svcs.ebay.com/services/search/FindingService/v1?SECURITY-APPNAME=scanpalg-41d3-4ac7-8ea3-dd855899e8a1&OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=1.0.0&RESPONSE-DATA-FORMAT=JSON&callback=_cb_findItemsByKeywords&REST-PAYLOAD&paginationInput.entriesPerPage=1&keywords=" + keywords;
