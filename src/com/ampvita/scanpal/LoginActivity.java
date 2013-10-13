@@ -31,43 +31,53 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 	
-		File temp = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/bus3.jpg");
-
-		if(temp.exists()){
-		    Bitmap myBitmap = BitmapFactory.decodeFile(temp.getAbsolutePath());
-			Toast.makeText(getApplicationContext(), myBitmap.toString(), Toast.LENGTH_SHORT).show();
-		    
-		    ImageView myImage = (ImageView) findViewById(R.id.ImageView);
-		    myImage.setImageBitmap(myBitmap);
-		}
+		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+		startActivityForResult(intent, 0);
 		
-		AsyncTask<String, Void, String> startTask = new AsyncTask<String, Void, String>() {
+		//reading file locally
+//		File temp = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/bus3.jpg");
+//
+//		if(temp.exists()){
+//		    Bitmap myBitmap = BitmapFactory.decodeFile(temp.getAbsolutePath());
+//			Toast.makeText(getApplicationContext(), myBitmap.toString(), Toast.LENGTH_SHORT).show();
+//		    
+//		    ImageView myImage = (ImageView) findViewById(R.id.ImageView);
+//		    myImage.setImageBitmap(myBitmap);
+//		}
+		
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	  if (resultCode == Activity.RESULT_OK && requestCode == 0) {
+			AsyncTask<String, Void, String> startTask = new AsyncTask<String, Void, String>() {
 
-			@Override
-			protected void onPostExecute(String result) {
-				// TODO Auto-generated method stub
-				super.onPostExecute(result);
-				
-				Intent toPayPal = new Intent(LoginActivity.this, PayPalActivity.class);
-			    startActivity(toPayPal);
-			}
-
-			protected String doInBackground(String... params) {
-				try {
-					HttpPost post = new HttpPost("http://scanpal-server.herokuapp.com/start.php");
-					return convertStreamToString(new DefaultHttpClient().execute(post).getEntity().getContent());//.toString();
-				} catch (Exception e) {
-					e.printStackTrace();
+				@Override
+				protected void onPostExecute(String result) {
+					// TODO Auto-generated method stub
+					super.onPostExecute(result);
+					
+					Intent toPayPal = new Intent(LoginActivity.this, PayPalActivity.class);
+				    startActivity(toPayPal);
 				}
-				return "fail";
+
+				protected String doInBackground(String... params) {
+					try {
+						HttpPost post = new HttpPost("http://scanpal-server.herokuapp.com/start.php");
+						return convertStreamToString(new DefaultHttpClient().execute(post).getEntity().getContent());//.toString();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return "fail";
+				}
+				
+			};
+			try {
+				startTask.execute("").get();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			
-		};
-		try {
-			startTask.execute("").get();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	  }
 	}
 
 	@Override
